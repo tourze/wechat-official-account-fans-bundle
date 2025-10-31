@@ -1,0 +1,90 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tourze\WechatOfficialAccountFansBundle\Tests\Request\User;
+
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
+use Tourze\WechatOfficialAccountFansBundle\Request\User\GetBlacklistRequest;
+use WechatOfficialAccountBundle\Entity\Account;
+
+/**
+ * @internal
+ */
+#[CoversClass(GetBlacklistRequest::class)]
+final class GetBlacklistRequestTest extends TestCase
+{
+    public function testGetRequestPath(): void
+    {
+        $request = new GetBlacklistRequest();
+
+        $this->assertSame('https://api.weixin.qq.com/cgi-bin/tags/members/getblacklist', $request->getRequestPath());
+    }
+
+    public function testGetRequestMethod(): void
+    {
+        $request = new GetBlacklistRequest();
+
+        $this->assertSame('POST', $request->getRequestMethod());
+    }
+
+    public function testBeginOpenidGetterSetter(): void
+    {
+        $request = new GetBlacklistRequest();
+
+        $this->assertNull($request->getBeginOpenid());
+
+        $request->setBeginOpenid('test_begin_openid');
+        $this->assertSame('test_begin_openid', $request->getBeginOpenid());
+    }
+
+    public function testBeginOpenidSetterWithNull(): void
+    {
+        $request = new GetBlacklistRequest();
+
+        $request->setBeginOpenid(null);
+        $this->assertNull($request->getBeginOpenid());
+    }
+
+    public function testGetRequestOptions(): void
+    {
+        $account = new Account();
+        $account->setAccessToken('test_access_token');
+
+        $request = new GetBlacklistRequest();
+        $request->setAccount($account);
+        $request->setBeginOpenid('test_begin_openid');
+
+        $options = $request->getRequestOptions();
+
+        $this->assertIsArray($options);
+        $this->assertArrayHasKey('query', $options);
+        $this->assertArrayHasKey('json', $options);
+        $this->assertSame([
+            'access_token' => 'test_access_token',
+        ], $options['query']);
+        $this->assertSame([
+            'begin_openid' => 'test_begin_openid',
+        ], $options['json']);
+    }
+
+    public function testGetRequestOptionsWithoutBeginOpenid(): void
+    {
+        $account = new Account();
+        $account->setAccessToken('test_access_token');
+
+        $request = new GetBlacklistRequest();
+        $request->setAccount($account);
+
+        $options = $request->getRequestOptions();
+
+        $this->assertIsArray($options);
+        $this->assertArrayHasKey('query', $options);
+        $this->assertArrayHasKey('json', $options);
+        $this->assertSame([
+            'access_token' => 'test_access_token',
+        ], $options['query']);
+        $this->assertSame([], $options['json']);
+    }
+}

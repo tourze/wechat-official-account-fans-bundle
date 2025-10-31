@@ -1,0 +1,134 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tourze\WechatOfficialAccountFansBundle\Tests\Request\User;
+
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
+use Tourze\WechatOfficialAccountFansBundle\Request\User\BatchGetUserInfoRequest;
+use WechatOfficialAccountBundle\Entity\Account;
+
+/**
+ * @internal
+ */
+#[CoversClass(BatchGetUserInfoRequest::class)]
+final class BatchGetUserInfoRequestTest extends TestCase
+{
+    public function testGetRequestPath(): void
+    {
+        $request = new BatchGetUserInfoRequest();
+
+        $this->assertSame('https://api.weixin.qq.com/cgi-bin/user/info/batchget', $request->getRequestPath());
+    }
+
+    public function testGetRequestMethod(): void
+    {
+        $request = new BatchGetUserInfoRequest();
+
+        $this->assertSame('POST', $request->getRequestMethod());
+    }
+
+    public function testUserListGetterSetter(): void
+    {
+        $request = new BatchGetUserInfoRequest();
+
+        $this->assertSame([], $request->getUserList());
+
+        $userList = [
+            ['openid' => 'openid1', 'lang' => 'zh_CN'],
+            ['openid' => 'openid2', 'lang' => 'en'],
+        ];
+        $request->setUserList($userList);
+        $this->assertSame($userList, $request->getUserList());
+    }
+
+    public function testAddUser(): void
+    {
+        $request = new BatchGetUserInfoRequest();
+
+        $request->addUser('openid1', 'zh_CN');
+        $this->assertSame([
+            ['openid' => 'openid1', 'lang' => 'zh_CN'],
+        ], $request->getUserList());
+
+        $request->addUser('openid2', 'en');
+        $this->assertSame([
+            ['openid' => 'openid1', 'lang' => 'zh_CN'],
+            ['openid' => 'openid2', 'lang' => 'en'],
+        ], $request->getUserList());
+    }
+
+    public function testAddUserWithDefaultLanguage(): void
+    {
+        $request = new BatchGetUserInfoRequest();
+
+        $request->addUser('openid1');
+        $this->assertSame([
+            ['openid' => 'openid1', 'lang' => 'zh_CN'],
+        ], $request->getUserList());
+    }
+
+    public function testSetOpenids(): void
+    {
+        $request = new BatchGetUserInfoRequest();
+
+        $request->setOpenids(['openid1', 'openid2'], 'en');
+        $this->assertSame([
+            ['openid' => 'openid1', 'lang' => 'en'],
+            ['openid' => 'openid2', 'lang' => 'en'],
+        ], $request->getUserList());
+    }
+
+    public function testSetOpenidsWithDefaultLanguage(): void
+    {
+        $request = new BatchGetUserInfoRequest();
+
+        $request->setOpenids(['openid1', 'openid2']);
+        $this->assertSame([
+            ['openid' => 'openid1', 'lang' => 'zh_CN'],
+            ['openid' => 'openid2', 'lang' => 'zh_CN'],
+        ], $request->getUserList());
+    }
+
+    public function testSetOpenidsResetsExistingUserList(): void
+    {
+        $request = new BatchGetUserInfoRequest();
+
+        $request->addUser('existing_openid');
+        $request->setOpenids(['openid1', 'openid2']);
+
+        $this->assertSame([
+            ['openid' => 'openid1', 'lang' => 'zh_CN'],
+            ['openid' => 'openid2', 'lang' => 'zh_CN'],
+        ], $request->getUserList());
+    }
+
+    public function testGetRequestOptions(): void
+    {
+        $account = new Account();
+        $account->setAccessToken('test_access_token');
+
+        $request = new BatchGetUserInfoRequest();
+        $request->setAccount($account);
+        $request->setUserList([
+            ['openid' => 'openid1', 'lang' => 'zh_CN'],
+            ['openid' => 'openid2', 'lang' => 'en'],
+        ]);
+
+        $options = $request->getRequestOptions();
+
+        $this->assertIsArray($options);
+        $this->assertArrayHasKey('query', $options);
+        $this->assertArrayHasKey('json', $options);
+        $this->assertSame([
+            'access_token' => 'test_access_token',
+        ], $options['query']);
+        $this->assertSame([
+            'user_list' => [
+                ['openid' => 'openid1', 'lang' => 'zh_CN'],
+                ['openid' => 'openid2', 'lang' => 'en'],
+            ],
+        ], $options['json']);
+    }
+}

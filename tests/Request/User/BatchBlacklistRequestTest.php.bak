@@ -1,0 +1,85 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tourze\WechatOfficialAccountFansBundle\Tests\Request\User;
+
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
+use Tourze\WechatOfficialAccountFansBundle\Request\User\BatchBlacklistRequest;
+use WechatOfficialAccountBundle\Entity\Account;
+
+/**
+ * @internal
+ */
+#[CoversClass(BatchBlacklistRequest::class)]
+final class BatchBlacklistRequestTest extends TestCase
+{
+    public function testGetRequestPath(): void
+    {
+        $request = new BatchBlacklistRequest();
+
+        $this->assertSame('https://api.weixin.qq.com/cgi-bin/tags/members/batchblacklist', $request->getRequestPath());
+    }
+
+    public function testGetRequestMethod(): void
+    {
+        $request = new BatchBlacklistRequest();
+
+        $this->assertSame('POST', $request->getRequestMethod());
+    }
+
+    public function testOpenidListGetterSetter(): void
+    {
+        $request = new BatchBlacklistRequest();
+
+        $this->assertSame([], $request->getOpenidList());
+
+        $openidList = ['openid1', 'openid2'];
+        $request->setOpenidList($openidList);
+        $this->assertSame($openidList, $request->getOpenidList());
+    }
+
+    public function testAddOpenid(): void
+    {
+        $request = new BatchBlacklistRequest();
+
+        $request->addOpenid('openid1');
+        $this->assertSame(['openid1'], $request->getOpenidList());
+
+        $request->addOpenid('openid2');
+        $this->assertSame(['openid1', 'openid2'], $request->getOpenidList());
+    }
+
+    public function testAddOpenidDoesNotAddDuplicates(): void
+    {
+        $request = new BatchBlacklistRequest();
+
+        $request->addOpenid('openid1');
+        $request->addOpenid('openid1'); // Same openid
+
+        $this->assertSame(['openid1'], $request->getOpenidList());
+    }
+
+    public function testGetRequestOptions(): void
+    {
+        $account = new Account();
+        $account->setAccessToken('test_access_token');
+
+        $request = new BatchBlacklistRequest();
+        $request->setAccount($account);
+        $request->setOpenidList(['openid1', 'openid2']);
+
+        $options = $request->getRequestOptions();
+
+        $this->assertIsArray($options);
+        $this->assertArrayHasKey('query', $options);
+        $this->assertArrayHasKey('json', $options);
+        $this->assertSame([
+            'access_token' => 'test_access_token',
+        ], $options['query']);
+        $this->assertSame([
+            'openid_list' => ['openid1', 'openid2'],
+        ], $options['json']);
+    }
+}

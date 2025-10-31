@@ -1,0 +1,15 @@
+services:
+  # default configuration for services in *this* file
+  _defaults:
+    autowire: true      # Automatically injects dependencies in your services.
+    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+    public: false
+
+  Tourze\WechatOfficialAccountFansBundle\Command\:
+    resource: '../../Command/'
+  Tourze\WechatOfficialAccountFansBundle\Controller\:
+    resource: '../../Controller/'
+  Tourze\WechatOfficialAccountFansBundle\Repository\:
+    resource: '../../Repository/'
+  Tourze\WechatOfficialAccountFansBundle\Service\:
+    resource: '../../Service/'

@@ -1,0 +1,105 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tourze\WechatOfficialAccountFansBundle\Tests\Request\User;
+
+use HttpClientBundle\Tests\Request\RequestTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Tourze\WechatOfficialAccountFansBundle\Request\User\SetUserRemarkRequest;
+use WechatOfficialAccountBundle\Entity\Account;
+
+/**
+ * @internal
+ */
+#[CoversClass(SetUserRemarkRequest::class)]
+final class SetUserRemarkRequestTest extends RequestTestCase
+{
+    public function testGetRequestPath(): void
+    {
+        $request = new SetUserRemarkRequest();
+
+        $this->assertSame('https://api.weixin.qq.com/cgi-bin/user/info/updateremark', $request->getRequestPath());
+    }
+
+    public function testGetRequestMethod(): void
+    {
+        $request = new SetUserRemarkRequest();
+
+        $this->assertSame('POST', $request->getRequestMethod());
+    }
+
+    public function testOpenidGetterSetter(): void
+    {
+        $request = new SetUserRemarkRequest();
+
+        $this->assertNull($request->getOpenid());
+
+        $request->setOpenid('test_openid');
+        $this->assertSame('test_openid', $request->getOpenid());
+    }
+
+    public function testRemarkGetterSetter(): void
+    {
+        $request = new SetUserRemarkRequest();
+
+        $this->assertNull($request->getRemark());
+
+        $request->setRemark('test_remark');
+        $this->assertSame('test_remark', $request->getRemark());
+    }
+
+    public function testRemarkSetterWithNull(): void
+    {
+        $request = new SetUserRemarkRequest();
+
+        $request->setRemark(null);
+        $this->assertNull($request->getRemark());
+    }
+
+    public function testGetRequestOptions(): void
+    {
+        $account = new Account();
+        $account->setAccessToken('test_access_token');
+
+        $request = new SetUserRemarkRequest();
+        $request->setAccount($account);
+        $request->setOpenid('test_openid');
+        $request->setRemark('test_remark');
+
+        $options = $request->getRequestOptions();
+
+        $this->assertArrayHasKey('query', $options);
+        $this->assertArrayHasKey('json', $options);
+        $this->assertSame([
+            'access_token' => 'test_access_token',
+        ], $options['query']);
+        $this->assertSame([
+            'openid' => 'test_openid',
+            'remark' => 'test_remark',
+        ], $options['json']);
+    }
+
+    public function testGetRequestOptionsWithNullRemark(): void
+    {
+        $account = new Account();
+        $account->setAccessToken('test_access_token');
+
+        $request = new SetUserRemarkRequest();
+        $request->setAccount($account);
+        $request->setOpenid('test_openid');
+        $request->setRemark(null);
+
+        $options = $request->getRequestOptions();
+
+        $this->assertArrayHasKey('query', $options);
+        $this->assertArrayHasKey('json', $options);
+        $this->assertSame([
+            'access_token' => 'test_access_token',
+        ], $options['query']);
+        $this->assertSame([
+            'openid' => 'test_openid',
+            'remark' => '',
+        ], $options['json']);
+    }
+}

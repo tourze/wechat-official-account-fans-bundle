@@ -1,0 +1,103 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tourze\WechatOfficialAccountFansBundle\Tests\Request\Tag;
+
+use HttpClientBundle\Tests\Request\RequestTestCase;
+use PHPUnit\Framework\Attributes\CoversClass;
+use Tourze\WechatOfficialAccountFansBundle\Request\Tag\GetTagUsersRequest;
+use WechatOfficialAccountBundle\Entity\Account;
+
+/**
+ * @internal
+ */
+#[CoversClass(GetTagUsersRequest::class)]
+final class GetTagUsersRequestTest extends RequestTestCase
+{
+    public function testGetRequestPath(): void
+    {
+        $request = new GetTagUsersRequest();
+
+        $this->assertSame('https://api.weixin.qq.com/cgi-bin/user/tag/get', $request->getRequestPath());
+    }
+
+    public function testGetRequestMethod(): void
+    {
+        $request = new GetTagUsersRequest();
+
+        $this->assertSame('POST', $request->getRequestMethod());
+    }
+
+    public function testTagidGetterSetter(): void
+    {
+        $request = new GetTagUsersRequest();
+
+        $this->assertNull($request->getTagid());
+
+        $request->setTagid(123);
+        $this->assertSame(123, $request->getTagid());
+    }
+
+    public function testNextOpenidGetterSetter(): void
+    {
+        $request = new GetTagUsersRequest();
+
+        $this->assertNull($request->getNextOpenid());
+
+        $request->setNextOpenid('test_next_openid');
+        $this->assertSame('test_next_openid', $request->getNextOpenid());
+    }
+
+    public function testNextOpenidSetterWithNull(): void
+    {
+        $request = new GetTagUsersRequest();
+
+        $request->setNextOpenid(null);
+        $this->assertNull($request->getNextOpenid());
+    }
+
+    public function testGetRequestOptions(): void
+    {
+        $account = new Account();
+        $account->setAccessToken('test_access_token');
+
+        $request = new GetTagUsersRequest();
+        $request->setAccount($account);
+        $request->setTagid(123);
+        $request->setNextOpenid('test_next_openid');
+
+        $options = $request->getRequestOptions();
+
+        $this->assertArrayHasKey('query', $options);
+        $this->assertArrayHasKey('json', $options);
+        $this->assertSame([
+            'access_token' => 'test_access_token',
+        ], $options['query']);
+        $this->assertSame([
+            'tagid' => 123,
+            'next_openid' => 'test_next_openid',
+        ], $options['json']);
+    }
+
+    public function testGetRequestOptionsWithoutNextOpenid(): void
+    {
+        $account = new Account();
+        $account->setAccessToken('test_access_token');
+
+        $request = new GetTagUsersRequest();
+        $request->setAccount($account);
+        $request->setTagid(123);
+
+        $options = $request->getRequestOptions();
+
+        $this->assertArrayHasKey('query', $options);
+        $this->assertArrayHasKey('json', $options);
+        $this->assertSame([
+            'access_token' => 'test_access_token',
+        ], $options['query']);
+        $this->assertSame([
+            'tagid' => 123,
+        ], $options['json']);
+    }
+}

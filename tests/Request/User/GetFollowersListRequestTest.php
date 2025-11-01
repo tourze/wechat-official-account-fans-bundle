@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tourze\WechatOfficialAccountFansBundle\Tests\Request\User;
 
-use HttpClientBundle\Tests\Request\RequestTestCase;
+use HttpClientBundle\Test\RequestTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Tourze\WechatOfficialAccountFansBundle\Request\User\GetFollowersListRequest;
 use WechatOfficialAccountBundle\Entity\Account;

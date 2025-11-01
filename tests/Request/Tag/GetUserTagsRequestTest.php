@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Tourze\WechatOfficialAccountFansBundle\Tests\Request\Tag;
 
+use HttpClientBundle\Test\RequestTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
 use Tourze\WechatOfficialAccountFansBundle\Request\Tag\GetUserTagsRequest;
-use HttpClientBundle\Tests\Request\RequestTestCase;
 use WechatOfficialAccountBundle\Entity\Account;
 
 /**

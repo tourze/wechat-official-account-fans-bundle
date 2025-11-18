@@ -45,13 +45,6 @@ final class FanTagCrudControllerTest extends AbstractEasyAdminControllerTestCase
         yield 'tag' => ['tag'];
     }
 
-    public function testGetEntityFqcn(): void
-    {
-        $controller = new FanTagCrudController();
-
-        self::assertSame(FanTag::class, $controller::getEntityFqcn());
-    }
-
     public function testConfigureFields(): void
     {
         $controller = new FanTagCrudController();

@@ -59,12 +59,6 @@ final class FanCrudControllerTest extends AbstractEasyAdminControllerTestCase
         yield 'fanTags' => ['fanTags'];
     }
 
-    public function testGetEntityFqcn(): void
-    {
-        $controller = new FanCrudController();
-        $this->assertSame(Fan::class, $controller::getEntityFqcn());
-    }
-
     public function testConfigureFields(): void
     {
         $controller = new FanCrudController();

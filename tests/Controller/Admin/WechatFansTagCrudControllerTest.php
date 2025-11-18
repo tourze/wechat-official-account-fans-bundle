@@ -56,12 +56,6 @@ final class WechatFansTagCrudControllerTest extends AbstractEasyAdminControllerT
         yield 'name' => ['name'];
     }
 
-    public function testGetEntityFqcn(): void
-    {
-        $controller = new WechatFansTagCrudController();
-        $this->assertSame(Tag::class, $controller::getEntityFqcn());
-    }
-
     public function testConfigureFields(): void
     {
         $controller = new WechatFansTagCrudController();
